@@ -198,6 +198,8 @@ class System {
 
     function netstat($option = '-ant')
     {
+        $option = $option[0];
+
         return shell_exec('netstat '.$option);
     }
 
