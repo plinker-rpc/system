@@ -9,6 +9,37 @@ class System {
         $this->host_os = trim(strtoupper(strstr(php_uname(),' ',true)));
     }
 
+    public function systemInfo()
+    {
+        $mem = $this->get_memory_stats();
+        return array(
+            //'machine-id' => $this->get_machine_id(),
+            'arch' => $this->arch(),
+            'checktime' => time(),
+            'mem_used' => $mem['used'],
+            'mem_free' => $mem['free'],
+            'mem_cache' => $mem['cache'],
+            'mem_total' => $this->get_memory_total(),
+            'cpu' => $this->server_cpu_usage(),
+            'cpuinfo' => $this->cpuinfo(),
+            'load' => $this->load(),
+            'diskfree' => $this->get_disk_space(),
+            'diskspace' => $this->get_total_disk_space(),
+            //'ping' => $this->ping(),
+            'netstat' => $this->netstat(),
+            'hostname' => $this->hostname(),
+            'logins' => $this->logins(),
+            'pstree' => $this->pstree(),
+            //'top' => $this->top(),
+             'uname' => $this->uname(),
+             'uptime' => $this->uptime(),
+             'netusage' => (int) $this->netusage('tx') + (int) $this->netusage('rx'),
+             'host_os' => $this->get_distro(),
+            // 'has_sys_updates' => $this->get_system_updates(),
+           'disks' => $this->disks(),
+        );
+    }
+
     function get_system_updates()
     {
         // allow only run once (though maybe twice) a day at 6 am
@@ -226,7 +257,7 @@ class System {
         } else {
             $arch = shell_exec('arch');
         }
-        return $arch;
+        return trim($arch);
     }
 
     function hostname()
