@@ -1,5 +1,5 @@
 <?php
-namespace plinker\System;
+namespace Plinker\System;
 
 class System {
 
