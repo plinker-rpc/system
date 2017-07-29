@@ -9,7 +9,7 @@ class System {
         $this->host_os = trim(strtoupper(strstr(php_uname(),' ',true)));
     }
 
-    function get_system_updates()
+    public function system_updates()
     {
         // allow only run once (though maybe twice) a day at 6 am
         if (file_exists('./check-updates') || (date('G') == '6' && date('i') >= 0 && date('i') < 30)) {
@@ -20,7 +20,7 @@ class System {
                 $result = $updSrc->Search('IsInstalled=0 and Type=\'Software\' and IsHidden=0');
                 return !empty($result->Updates->Count) ? '1':'0';
             } else {
-                if (get_distro() === 'UBUNTU') {
+                if (distro() === 'UBUNTU') {
                     $get_updates = shell_exec('apt-get -s dist-upgrade');
 
                     if (preg_match('/^(\d+).+upgrade.+(\d+).+newly\sinstall/m', $get_updates, $matches)) {
@@ -30,7 +30,7 @@ class System {
                     }
                     return !empty($result) ? '1':'0';
                 }
-                if (get_distro() === 'CENTOS') {
+                if (distro() === 'CENTOS') {
                     exec('yum check-update', $output, $exitCode);
                     return ($exitCode == 100) ? '1':'0';
                 }
@@ -42,7 +42,7 @@ class System {
         }
     }
 
-    function get_disk_space($path = '/')
+    public function disk_space($path = '/')
     {
         $path = $path[0];
 
@@ -64,7 +64,7 @@ class System {
         return ($df > 0 && $ds > 0 && $df < $ds) ? floor($df/$ds * 100) : 0;
     }
 
-    function get_total_disk_space($path = '/')
+    public function total_disk_space($path = '/')
     {
         $path = $path[0];
 
@@ -85,7 +85,7 @@ class System {
         return $ds;
     }
 
-    function get_memory_stats()
+    public function memory_stats()
     {
         if ($this->host_os === 'WINDOWS') {
             $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
@@ -133,7 +133,7 @@ class System {
         return $result;
     }
 
-    function get_memory_total()
+    public function memory_total()
     {
         $mem_total = 0;
         if ($this->host_os === 'WINDOWS') {
@@ -158,7 +158,7 @@ class System {
         return $mem_total;
     }
 
-    function server_cpu_usage()
+    public function server_cpu_usage()
     {
         if ($this->host_os === 'WINDOWS') {
             $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
@@ -173,7 +173,7 @@ class System {
         return trim($return);
     }
 
-    function get_machine_id()
+    public function machine_id()
     {
         if (file_exists('./machine-id')) {
             return file_get_contents('./machine-id');
@@ -196,14 +196,14 @@ class System {
         return $id;
     }
 
-    function netstat($option = '-ant')
+    public function netstat($option = '-ant')
     {
         $option = $option[0];
 
         return shell_exec('netstat '.$option);
     }
 
-    function arch()
+    public function arch()
     {
         if ($this->host_os === 'WINDOWS') {
             $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
@@ -229,7 +229,7 @@ class System {
         return $arch;
     }
 
-    function hostname()
+    public function hostname()
     {
         if ($this->host_os === 'WINDOWS') {
             $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
@@ -244,17 +244,17 @@ class System {
         return $hostname;
     }
 
-    function logins()
+    public function logins()
     {
         return shell_exec('last');
     }
 
-    function pstree()
+    public function pstree()
     {
         return shell_exec('pstree');
     }
 
-    function top()
+    public function top()
     {
         if (date('i') >= 0 && date('i') < 10) {
             return '-1';
@@ -266,7 +266,7 @@ class System {
         return trim($result);
     }
 
-    function uname()
+    public function uname()
     {
         if ($this->host_os === 'WINDOWS') {
             $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
@@ -282,12 +282,12 @@ class System {
         return $uname;
     }
 
-    function cpuinfo()
+    public function cpuinfo()
     {
         return trim(shell_exec('cat /proc/cpuinfo'));
     }
 
-    function netusage($direction = 'tx')
+    public function netusage($direction = 'tx')
     {
         $direction = $direction[0];
 
@@ -299,12 +299,12 @@ class System {
         }
     }
 
-    function load()
+    public function load()
     {
         return shell_exec('cat /proc/loadavg');
     }
 
-    function disks()
+    public function disks()
     {
         if ($this->host_os !== 'WINDOWS') {
             return shell_exec('df -h --output=source,fstype,size,used,avail,pcent,target -x tmpfs -x devtmpfs');
@@ -313,7 +313,7 @@ class System {
         }
     }
 
-    function uptime($option = '-p')
+    public function uptime($option = '-p')
     {
         $option = $option[0];
 
@@ -335,7 +335,7 @@ class System {
         return $uptime;
     }
 
-    function ping($host = '')
+    public function ping($host = '')
     {
         $host = $host[0];
 
@@ -354,7 +354,7 @@ class System {
         return $status;
     }
 
-    function get_distro()
+    public function distro()
     {
         if (file_exists('/etc/redhat-release')) {
             $centos_array = explode(' ', file_get_contents('/etc/redhat-release'));
@@ -367,18 +367,18 @@ class System {
         }
     }
 
-    function drop_cache()
+    public function drop_cache()
     {
         shell_exec('echo 1 > /proc/sys/vm/drop_caches');
     }
 
-    function clear_swap()
+    public function clear_swap()
     {
         shell_exec('swapoff -a');
         shell_exec('swapon -a');
     }
 
-    function reboot()
+    public function reboot()
     {
         if (!file_exists('./reboot.sh')) {
             file_put_contents('./reboot.sh', '#!/bin/bash'.PHP_EOL.'/sbin/shutdown -r now');
@@ -387,7 +387,7 @@ class System {
         shell_exec('./reboot.sh');
     }
 
-    function check_updates()
+    public function check_updates()
     {
         file_put_contents('./check-updates', '1');
         chmod('./check-updates', 0750);
