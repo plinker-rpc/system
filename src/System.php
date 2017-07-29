@@ -241,7 +241,7 @@ class System {
         } else {
             $hostname = shell_exec('hostname');
         }
-        return $hostname;
+        return trim($hostname);
     }
 
     public function logins()
