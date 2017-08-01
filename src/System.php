@@ -256,13 +256,10 @@ class System {
 
     public function top()
     {
-        if (date('i') >= 0 && date('i') < 10) {
-            return '-1';
-        }
-
         shell_exec('top -n 1 -b > ./top-output');
+        usleep(25000);
         $result = file_get_contents('./top-output');
-        unlink('./top-output');
+        //unlink('./top-output');
         return trim($result);
     }
 
@@ -287,17 +284,17 @@ class System {
         return trim(shell_exec('cat /proc/cpuinfo'));
     }
 
-    public function netusage($direction = 'tx')
-    {
-        $direction = $direction[0];
+    // public function netusage($direction = 'tx')
+    // {
+    //     $direction = $direction[0];
 
-        if ($direction == 'tx') {
-            return shell_exec('S=2; F=/sys/class/net/eth0/statistics/tx_bytes; X=`cat $F`; sleep $S; Y=`cat $F`; BPS="$(((Y-X)/S))"; echo $BPS');
-        }
-        if ($direction == 'rx') {
-            return shell_exec('S=2; F=/sys/class/net/eth0/statistics/rx_bytes; X=`cat $F`; sleep $S; Y=`cat $F`; BPS="$(((Y-X)/S))"; echo $BPS');
-        }
-    }
+    //     if ($direction == 'tx') {
+    //         return shell_exec('S=2; F=/sys/class/net/eth0/statistics/tx_bytes; X=`cat $F`; sleep $S; Y=`cat $F`; BPS="$(((Y-X)/S))"; echo $BPS');
+    //     }
+    //     if ($direction == 'rx') {
+    //         return shell_exec('S=2; F=/sys/class/net/eth0/statistics/rx_bytes; X=`cat $F`; sleep $S; Y=`cat $F`; BPS="$(((Y-X)/S))"; echo $BPS');
+    //     }
+    // }
 
     public function load()
     {
