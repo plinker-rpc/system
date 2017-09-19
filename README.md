@@ -15,7 +15,6 @@ A system component which gives you access to server information, execute command
     }
 
 
-
 Making a remote call.
 --------------------
 
