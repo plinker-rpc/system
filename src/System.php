@@ -1,12 +1,12 @@
 <?php
 namespace Plinker\System;
 
-class System {
-
+class System
+{
     public function __construct(array $config = array())
     {
         $this->config = $config;
-        $this->host_os = trim(strtoupper(strstr(php_uname(),' ',true)));
+        $this->host_os = trim(strtoupper(strstr(php_uname(), ' ', true)));
     }
 
     public function system_updates()
@@ -36,7 +36,6 @@ class System {
                 }
                 return '-1';
             }
-
         } else {
             return '-1';
         }
@@ -103,7 +102,7 @@ class System {
             }
             $mem_buff = 0;
         } else {
-            $fh = fopen('/proc/meminfo','r');
+            $fh = fopen('/proc/meminfo', 'r');
 
             $mem_free = $mem_buff = $mem_cache = $mem_total = 0;
 
@@ -144,7 +143,7 @@ class System {
                 $mem_total = $m->TotalVisibleMemorySize;
             }
         } else {
-            $fh = fopen('/proc/meminfo','r');
+            $fh = fopen('/proc/meminfo', 'r');
 
             while ($line = fgets($fh)) {
                 $pieces = array();
@@ -389,5 +388,4 @@ class System {
         file_put_contents('./check-updates', '1');
         chmod('./check-updates', 0750);
     }
-
 }
