@@ -1,14 +1,23 @@
 <?php
 namespace Plinker\System;
 
+/**
+ * 
+ */
 class System
 {
+    /**
+     * 
+     */
     public function __construct(array $config = array())
     {
         $this->config = $config;
         $this->host_os = trim(strtoupper(strstr(php_uname(), ' ', true)));
     }
-
+    
+    /**
+     * 
+     */
     public function system_updates()
     {
         // allow only run once (though maybe twice) a day at 6 am
@@ -40,7 +49,10 @@ class System
             return '-1';
         }
     }
-
+    
+    /**
+     * 
+     */
     public function disk_space($path = '/')
     {
         $path = $path[0];
@@ -62,7 +74,10 @@ class System
 
         return ($df > 0 && $ds > 0 && $df < $ds) ? floor($df/$ds * 100) : 0;
     }
-
+    
+    /**
+     * 
+     */
     public function total_disk_space($path = '/')
     {
         $path = $path[0];
@@ -83,7 +98,10 @@ class System
 
         return $ds;
     }
-
+    
+    /**
+     * 
+     */
     public function memory_stats()
     {
         if ($this->host_os === 'WINDOWS') {
@@ -131,7 +149,10 @@ class System
 
         return $result;
     }
-
+    
+    /**
+     * 
+     */
     public function memory_total()
     {
         $mem_total = 0;
@@ -156,7 +177,10 @@ class System
 
         return $mem_total;
     }
-
+    
+    /**
+     * 
+     */
     public function server_cpu_usage()
     {
         if ($this->host_os === 'WINDOWS') {
@@ -171,7 +195,10 @@ class System
         }
         return trim($return);
     }
-
+    
+    /**
+     * 
+     */
     public function machine_id()
     {
         if (file_exists('./machine-id')) {
@@ -194,14 +221,20 @@ class System
         file_put_contents('./machine-id', $id);
         return $id;
     }
-
+    
+    /**
+     * 
+     */
     public function netstat($option = '-ant')
     {
         $option = $option[0];
 
         return shell_exec('netstat '.$option);
     }
-
+    
+    /**
+     * 
+     */
     public function arch()
     {
         if ($this->host_os === 'WINDOWS') {
@@ -227,7 +260,10 @@ class System
         }
         return $arch;
     }
-
+    
+    /**
+     * 
+     */
     public function hostname()
     {
         if ($this->host_os === 'WINDOWS') {
@@ -242,26 +278,37 @@ class System
         }
         return trim($hostname);
     }
-
+    
+    /**
+     * 
+     */
     public function logins()
     {
         return shell_exec('last');
     }
-
+    
+    /**
+     * 
+     */
     public function pstree()
     {
         return shell_exec('pstree');
     }
-
+    
+    /**
+     * 
+     */
     public function top()
     {
         shell_exec('top -n 1 -b > ./top-output');
         usleep(25000);
         $result = file_get_contents('./top-output');
-        //unlink('./top-output');
         return trim($result);
     }
-
+    
+    /**
+     * 
+     */
     public function uname()
     {
         if ($this->host_os === 'WINDOWS') {
@@ -277,12 +324,18 @@ class System
         }
         return $uname;
     }
-
+    
+    /**
+     * 
+     */
     public function cpuinfo()
     {
         return trim(shell_exec('cat /proc/cpuinfo'));
     }
-
+    
+    /**
+     * 
+     */
     // public function netusage($direction = 'tx')
     // {
     //     $direction = $direction[0];
@@ -294,12 +347,18 @@ class System
     //         return shell_exec('S=2; F=/sys/class/net/eth0/statistics/rx_bytes; X=`cat $F`; sleep $S; Y=`cat $F`; BPS="$(((Y-X)/S))"; echo $BPS');
     //     }
     // }
-
+    
+    /**
+     * 
+     */
     public function load()
     {
         return shell_exec('cat /proc/loadavg');
     }
-
+    
+    /**
+     * 
+     */
     public function disks()
     {
         if ($this->host_os !== 'WINDOWS') {
@@ -308,7 +367,10 @@ class System
             return '';
         }
     }
-
+    
+    /**
+     * 
+     */
     public function uptime($option = '-p')
     {
         $option = $option[0];
@@ -330,7 +392,10 @@ class System
         }
         return $uptime;
     }
-
+    
+    /**
+     * 
+     */
     public function ping($host = '')
     {
         $host = $host[0];
@@ -349,7 +414,10 @@ class System
 
         return $status;
     }
-
+    
+    /**
+     * 
+     */
     public function distro()
     {
         if (file_exists('/etc/redhat-release')) {
@@ -362,18 +430,27 @@ class System
             return strtoupper($matches[1]);
         }
     }
-
+    
+    /**
+     * 
+     */
     public function drop_cache()
     {
         shell_exec('echo 1 > /proc/sys/vm/drop_caches');
     }
-
+    
+    /**
+     * 
+     */
     public function clear_swap()
     {
         shell_exec('swapoff -a');
         shell_exec('swapon -a');
     }
-
+    
+    /**
+     * 
+     */
     public function reboot()
     {
         if (!file_exists('./reboot.sh')) {
@@ -382,7 +459,10 @@ class System
         }
         shell_exec('./reboot.sh');
     }
-
+    
+    /**
+     * 
+     */
     public function check_updates()
     {
         file_put_contents('./check-updates', '1');
