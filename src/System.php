@@ -2,12 +2,12 @@
 namespace Plinker\System;
 
 /**
- * 
+ *
  */
 class System
 {
     /**
-     * 
+     *
      */
     public function __construct(array $config = array())
     {
@@ -16,7 +16,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function system_updates()
     {
@@ -51,7 +51,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function disk_space($path = '/')
     {
@@ -76,7 +76,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function total_disk_space($path = '/')
     {
@@ -100,7 +100,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function memory_stats()
     {
@@ -151,7 +151,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function memory_total()
     {
@@ -179,7 +179,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function server_cpu_usage()
     {
@@ -197,7 +197,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function machine_id()
     {
@@ -223,7 +223,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function netstat($option = '-ant')
     {
@@ -233,7 +233,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function arch()
     {
@@ -262,7 +262,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function hostname()
     {
@@ -280,7 +280,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function logins()
     {
@@ -288,7 +288,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function pstree()
     {
@@ -296,7 +296,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function top()
     {
@@ -307,7 +307,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function uname()
     {
@@ -326,7 +326,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function cpuinfo()
     {
@@ -334,7 +334,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     // public function netusage($direction = 'tx')
     // {
@@ -349,7 +349,7 @@ class System
     // }
     
     /**
-     * 
+     *
      */
     public function load()
     {
@@ -357,7 +357,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function disks()
     {
@@ -369,7 +369,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function uptime($option = '-p')
     {
@@ -394,7 +394,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function ping($host = '')
     {
@@ -416,7 +416,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function distro()
     {
@@ -432,7 +432,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function drop_cache()
     {
@@ -440,7 +440,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function clear_swap()
     {
@@ -449,7 +449,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function reboot()
     {
@@ -461,7 +461,7 @@ class System
     }
     
     /**
-     * 
+     *
      */
     public function check_updates()
     {
