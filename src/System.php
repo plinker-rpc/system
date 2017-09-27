@@ -2,63 +2,63 @@
 namespace Plinker\System;
 
 /**
- *
+ * System information
+ * 
+ * Some methods require root and not all work with windows.
  */
 class System
 {
     /**
      *
      */
-    public function __construct(array $config = array())
+    public function __construct()
     {
-        $this->config = $config;
         $this->host_os = trim(strtoupper(strstr(php_uname(), ' ', true)));
     }
     
     /**
-     *
+     * Check system for updates
+     * 
+     * @return int 1=has updates, 0=no updates, -1=dunno
      */
     public function system_updates()
     {
-        // allow only run once (though maybe twice) a day at 6 am
-        if (file_exists('./check-updates') || (date('G') == '6' && date('i') >= 0 && date('i') < 30)) {
-            unlink('./check-updates');
-            if ($this->host_os === 'WINDOWS') {
-                $updSess = new COM("Microsoft.Update.Session");
-                $updSrc = $updSess->CreateUpdateSearcher();
-                $result = $updSrc->Search('IsInstalled=0 and Type=\'Software\' and IsHidden=0');
-                return !empty($result->Updates->Count) ? '1':'0';
-            } else {
-                if (distro() === 'UBUNTU') {
-                    $get_updates = shell_exec('apt-get -s dist-upgrade');
-
-                    if (preg_match('/^(\d+).+upgrade.+(\d+).+newly\sinstall/m', $get_updates, $matches)) {
-                        $result = (int) $matches[1] + (int) $matches[2];
-                    } else {
-                        $result = 0;
-                    }
-                    return !empty($result) ? '1':'0';
-                }
-                if (distro() === 'CENTOS') {
-                    exec('yum check-update', $output, $exitCode);
-                    return ($exitCode == 100) ? '1':'0';
-                }
-                return '-1';
-            }
+        unlink('./check-updates');
+        if ($this->host_os === 'WINDOWS') {
+            $updSess = new \COM("Microsoft.Update.Session");
+            $updSrc = $updSess->CreateUpdateSearcher();
+            $result = $updSrc->Search('IsInstalled=0 and Type=\'Software\' and IsHidden=0');
+            return !empty($result->Updates->Count) ? '1':'0';
         } else {
+            if ($this->distro() === 'UBUNTU') {
+                $get_updates = shell_exec('apt-get -s dist-upgrade');
+                if (preg_match('/^(\d+).+upgrade.+(\d+).+newly\sinstall/m', $get_updates, $matches)) {
+                    $result = (int) $matches[1] + (int) $matches[2];
+                } else {
+                    $result = 0;
+                }
+                return !empty($result) ? '1':'0';
+            }
+            if ($this->distro() === 'CENTOS') {
+                exec('yum check-update', $output, $exitCode);
+                return ($exitCode == 100) ? '1':'0';
+            }
             return '-1';
         }
     }
-    
+
     /**
-     *
+     * Get diskspace
+     * 
+     * @param  string $path
+     * @return int
      */
     public function disk_space($path = '/')
     {
         $path = $path[0];
 
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $disks =  $wmi->ExecQuery("Select * from Win32_LogicalDisk");
 
             foreach ($disks as $d) {
@@ -76,7 +76,10 @@ class System
     }
     
     /**
-     *
+     * Get total diskspace
+     * 
+     * @param  string $path
+     * @return int
      */
     public function total_disk_space($path = '/')
     {
@@ -84,7 +87,7 @@ class System
 
         $ds = 0;
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $disks =  $wmi->ExecQuery("Select * from Win32_LogicalDisk");
 
             foreach ($disks as $d) {
@@ -100,12 +103,14 @@ class System
     }
     
     /**
-     *
+     * Get memory usage
+     * 
+     * @return array
      */
     public function memory_stats()
     {
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $os =  $wmi->ExecQuery("SELECT * FROM Win32_OperatingSystem");
 
             foreach ($os as $m) {
@@ -151,13 +156,15 @@ class System
     }
     
     /**
-     *
+     * Get memory total bytes
+     * 
+     * @return int
      */
     public function memory_total()
     {
         $mem_total = 0;
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $os =  $wmi->ExecQuery("SELECT * FROM Win32_OperatingSystem");
 
             foreach ($os as $m) {
@@ -179,12 +186,14 @@ class System
     }
     
     /**
-     *
+     * Get CPU usage in percentage
+     * 
+     * @return int
      */
     public function server_cpu_usage()
     {
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $cpus = $wmi->ExecQuery("SELECT LoadPercentage FROM Win32_Processor");
 
             foreach ($cpus as $cpu) {
@@ -197,7 +206,10 @@ class System
     }
     
     /**
-     *
+     * Get system machine-id
+     *  - Generates one if does not have one (windows).
+     * 
+     * @return string
      */
     public function machine_id()
     {
@@ -223,7 +235,9 @@ class System
     }
     
     /**
-     *
+     * Get netstat output
+     * 
+     * @return string
      */
     public function netstat($option = '-ant')
     {
@@ -233,12 +247,14 @@ class System
     }
     
     /**
-     *
+     * Get system architecture
+     * 
+     * @return string
      */
     public function arch()
     {
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $cpu=  $wmi->ExecQuery("Select * from Win32_Processor");
 
             foreach ($cpu as $c) {
@@ -262,12 +278,14 @@ class System
     }
     
     /**
-     *
+     * Get system hostname
+     * 
+     * @return string
      */
     public function hostname()
     {
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $computer = $wmi->ExecQuery("SELECT * FROM Win32_ComputerSystem");
 
             foreach ($computer as $c) {
@@ -280,7 +298,9 @@ class System
     }
     
     /**
-     *
+     * Get system last logins
+     * 
+     * @return string
      */
     public function logins()
     {
@@ -288,7 +308,9 @@ class System
     }
     
     /**
-     *
+     * Get system process tree
+     * 
+     * @return string
      */
     public function pstree()
     {
@@ -296,7 +318,9 @@ class System
     }
     
     /**
-     *
+     * Get system top output
+     * 
+     * @param string
      */
     public function top()
     {
@@ -307,12 +331,14 @@ class System
     }
     
     /**
-     *
+     * Get system name/kernel version
+     * 
+     * @return string
      */
     public function uname()
     {
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $os=  $wmi->ExecQuery("Select * from Win32_OperatingSystem");
 
             foreach ($os as $o) {
@@ -326,7 +352,9 @@ class System
     }
     
     /**
-     *
+     * Get system CPU info output
+     * 
+     * @param string
      */
     public function cpuinfo()
     {
@@ -334,7 +362,7 @@ class System
     }
     
     /**
-     *
+     * Get current network usage - Bit slow and not reliable
      */
     // public function netusage($direction = 'tx')
     // {
@@ -349,7 +377,9 @@ class System
     // }
     
     /**
-     *
+     * Get system load
+     * 
+     * @return string
      */
     public function load()
     {
@@ -357,7 +387,9 @@ class System
     }
     
     /**
-     *
+     * Get disk file system table
+     * 
+     * @return string
      */
     public function disks()
     {
@@ -369,14 +401,14 @@ class System
     }
     
     /**
-     *
+     * Get system uptime
      */
     public function uptime($option = '-p')
     {
         $option = $option[0];
 
         if ($this->host_os === 'WINDOWS') {
-            $wmi = new COM("winmgmts:\\\\.\\root\\cimv2");
+            $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $os = $wmi->ExecQuery("SELECT * FROM Win32_OperatingSystem");
 
             foreach ($os as $o) {
@@ -394,7 +426,9 @@ class System
     }
     
     /**
-     *
+     * Ping a server and return timing
+     * 
+     * @return float
      */
     public function ping($host = '')
     {
@@ -416,7 +450,9 @@ class System
     }
     
     /**
-     *
+     * Get system distro
+     * 
+     * @return string
      */
     public function distro()
     {
@@ -432,7 +468,10 @@ class System
     }
     
     /**
-     *
+     * Drop memory caches
+     * 
+     * @requires root
+     * @return void
      */
     public function drop_cache()
     {
@@ -440,7 +479,10 @@ class System
     }
     
     /**
-     *
+     * Clear swapspace
+     * 
+     * @requires root
+     * @return void
      */
     public function clear_swap()
     {
@@ -449,7 +491,10 @@ class System
     }
     
     /**
-     *
+     * Reboot the system
+     * 
+     * @requires root
+     * @return void
      */
     public function reboot()
     {
@@ -459,13 +504,5 @@ class System
         }
         shell_exec('./reboot.sh');
     }
-    
-    /**
-     *
-     */
-    public function check_updates()
-    {
-        file_put_contents('./check-updates', '1');
-        chmod('./check-updates', 0750);
-    }
+
 }

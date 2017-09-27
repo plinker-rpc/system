@@ -1,9 +1,9 @@
 {
     "name": "plinker/system",
     "minimum-stability": "dev",
-    "description": "",
+    "description": "System component which gives you access to server information.",
     "license": "MIT",
-    "keywords": [],
+    "keywords": ["system","information"],
     "homepage": "https://bitbucket.org/plinker/example/",
     "authors": [
         {
@@ -17,6 +17,7 @@
         "email": "plinker@icodes.it"
     },
     "require": {
+        "plinker/core": ">=0.1",
     },
     "autoload": {
         "psr-4": {

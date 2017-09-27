@@ -3,13 +3,12 @@
 
 Plinker PHP RPC client/server makes it really easy to link and execute PHP component classes on remote systems, while maintaining the feel of a local method call.
 
-A system component which gives you access to server information, execute commands and reboot.
+A system component which gives you access to server information.
 
 **Composer**
 
     {
     	"require": {
-    		"plinker/core": ">=v0.1",
     		"plinker/system": ">=v0.1"
     	}
     }
@@ -35,14 +34,14 @@ WIP: To be updated with info on how to use this component, also add the tasks co
      */
     $plink = new Plinker\Core\Client(
         'http://example.com',
-        'Test\Demo',
+        'System\System',
         'username',
         'password',
         array(
             'time' => time()
         )
     );
-    echo '<pre>'.print_r($plink->test(), true).'</pre>';
+    echo '<pre>'.print_r($plink->memory_stats(), true).'</pre>';
 
 
 **then the server part...**
