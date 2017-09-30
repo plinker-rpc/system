@@ -3,7 +3,7 @@ namespace Plinker\System;
 
 /**
  * System information
- * 
+ *
  * Some methods require root and not all work with windows.
  */
 class System
@@ -18,7 +18,7 @@ class System
     
     /**
      * Check system for updates
-     * 
+     *
      * @return int 1=has updates, 0=no updates, -1=dunno
      */
     public function system_updates()
@@ -49,7 +49,7 @@ class System
 
     /**
      * Get diskspace
-     * 
+     *
      * @param  string $path
      * @return int
      */
@@ -77,7 +77,7 @@ class System
     
     /**
      * Get total diskspace
-     * 
+     *
      * @param  string $path
      * @return int
      */
@@ -104,7 +104,7 @@ class System
     
     /**
      * Get memory usage
-     * 
+     *
      * @return array
      */
     public function memory_stats()
@@ -157,7 +157,7 @@ class System
     
     /**
      * Get memory total bytes
-     * 
+     *
      * @return int
      */
     public function memory_total()
@@ -187,7 +187,7 @@ class System
     
     /**
      * Get CPU usage in percentage
-     * 
+     *
      * @return int
      */
     public function server_cpu_usage()
@@ -208,7 +208,7 @@ class System
     /**
      * Get system machine-id
      *  - Generates one if does not have one (windows).
-     * 
+     *
      * @return string
      */
     public function machine_id()
@@ -236,7 +236,7 @@ class System
     
     /**
      * Get netstat output
-     * 
+     *
      * @return string
      */
     public function netstat($option = '-ant')
@@ -248,7 +248,7 @@ class System
     
     /**
      * Get system architecture
-     * 
+     *
      * @return string
      */
     public function arch()
@@ -279,7 +279,7 @@ class System
     
     /**
      * Get system hostname
-     * 
+     *
      * @return string
      */
     public function hostname()
@@ -299,7 +299,7 @@ class System
     
     /**
      * Get system last logins
-     * 
+     *
      * @return string
      */
     public function logins()
@@ -309,7 +309,7 @@ class System
     
     /**
      * Get system process tree
-     * 
+     *
      * @return string
      */
     public function pstree()
@@ -319,7 +319,7 @@ class System
     
     /**
      * Get system top output
-     * 
+     *
      * @param string
      */
     public function top()
@@ -332,7 +332,7 @@ class System
     
     /**
      * Get system name/kernel version
-     * 
+     *
      * @return string
      */
     public function uname()
@@ -353,7 +353,7 @@ class System
     
     /**
      * Get system CPU info output
-     * 
+     *
      * @param string
      */
     public function cpuinfo()
@@ -378,7 +378,7 @@ class System
     
     /**
      * Get system load
-     * 
+     *
      * @return string
      */
     public function load()
@@ -388,7 +388,7 @@ class System
     
     /**
      * Get disk file system table
-     * 
+     *
      * @return string
      */
     public function disks()
@@ -427,7 +427,7 @@ class System
     
     /**
      * Ping a server and return timing
-     * 
+     *
      * @return float
      */
     public function ping($host = '')
@@ -451,7 +451,7 @@ class System
     
     /**
      * Get system distro
-     * 
+     *
      * @return string
      */
     public function distro()
@@ -469,7 +469,7 @@ class System
     
     /**
      * Drop memory caches
-     * 
+     *
      * @requires root
      * @return void
      */
@@ -480,7 +480,7 @@ class System
     
     /**
      * Clear swapspace
-     * 
+     *
      * @requires root
      * @return void
      */
@@ -492,7 +492,7 @@ class System
     
     /**
      * Reboot the system
-     * 
+     *
      * @requires root
      * @return void
      */
@@ -504,5 +504,4 @@ class System
         }
         shell_exec('./reboot.sh');
     }
-
 }
