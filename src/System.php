@@ -239,11 +239,38 @@ class System
      *
      * @return string
      */
-    public function netstat($option = '-ant')
+    public function netstat($option = '-ant', $parse = true)
     {
         $option = $option[0];
-
-        return shell_exec('netstat '.$option);
+        
+        $result = shell_exec('netstat '.$option);
+        
+        if ($parse) {
+            $lines = explode(PHP_EOL, $result);
+            unset($lines[0]);
+            unset($lines[1]);
+                 
+            $columns = [
+                'Proto',
+                'Recv-Q',
+                'Send-Q',
+                'Local Address',
+                'Foreign Address',
+                'State',
+                'PID/Program',
+                'Process Name',
+            ];
+            
+            $result = [];
+            foreach ($lines as $row => $line) {
+                $column = array_values(array_filter(explode(' ', $line), 'strlen'));
+                foreach ($columns as $col => $key) {
+                    $result[$row][$key] = @$column[$col];
+                }
+            }
+        }
+        
+        return $result;
     }
     
     /**
@@ -302,9 +329,82 @@ class System
      *
      * @return string
      */
-    public function logins()
+    public function logins($parse = true)
     {
-        return shell_exec('last');
+        $result = shell_exec('last');
+
+        if ($parse) {
+            
+            $lines = explode(PHP_EOL, $result);
+            
+            // detect end by empty line space
+            $end = 0;
+            foreach ($lines as $no => $line) {
+                if (trim($line) == '') {
+                    $end = $no;
+                    break;
+                }
+            }
+            // filter out end lines
+            foreach (range($end, count($lines)) as $key) {
+                unset($lines[$key]);
+            }
+
+            // define columns
+            $columns = [
+                'User',
+                'Terminal',
+                'Display',
+                'Day',
+                'Month',
+                'Day Date',
+                'Day Time',
+                '-',
+                'Disconnected',
+                'Duration',
+            ];
+            
+            // generic match rows for columns and set into return
+            $result = [];
+            foreach ($lines as $row => $line) {
+                $column = array_values(array_filter(explode(' ', $line), 'strlen'));
+                foreach ($columns as $col => $key) {
+                    $result[$row][$key] = @$column[$col];
+                }
+            }
+            
+            // fix
+            $fix = [];
+            foreach ($result as $key => $row) {
+                if ($row['User'] == 'reboot') {
+                    $fix[] = [
+                        'User' => 'Reboot',
+                        'Terminal' => '',
+                        'Date' => '',
+                        'Disconnected' => '',
+                        'Duration' => '',
+                    ];
+                } else {
+                    if ($row['Duration'] == 'no') {
+                        $row['Duration'] = '';
+                    }
+                    if ($row['Disconnected'] == '-') {
+                        $row['Disconnected'] = '';
+                    }
+                    
+                    $fix[] = [
+                        'User' => $row['User'],
+                        'Terminal' => $row['Terminal'].''.$row['Display'],
+                        'Date' => $row['Day'].' '.$row['Month'].' '.$row['Day Date'].' '.$row['Day Time'],
+                        'Disconnected' => $row['Disconnected'],
+                        'Duration' => trim($row['Duration'], '()'),
+                    ];
+                }
+            }
+            $result = $fix;
+        }
+        
+        return $result;
     }
     
     /**
@@ -322,12 +422,58 @@ class System
      *
      * @param string
      */
-    public function top()
+    public function top($parse = true)
     {
         shell_exec('top -n 1 -b > ./top-output');
         usleep(25000);
-        $result = file_get_contents('./top-output');
-        return trim($result);
+        $result = trim(file_get_contents('./top-output'));
+
+        if ($parse) {
+            $lines = explode(PHP_EOL, $result);
+
+            // detect start by empty line space
+            $start = 0;
+            foreach ($lines as $no => $line) {
+                if (trim($line) == '') {
+                    $start = $no;
+                    break;
+                }
+            }
+            // filter out header lines
+            foreach (range(0, $start) as $key) {
+                unset($lines[$key]);
+            }
+            
+            //remove column line
+            unset($lines[$start+1]);
+            
+            // define columns
+            $columns = [
+                'PID',
+                'USER',
+                'PR',
+                'NI',
+                'VIRT',
+                'RES',
+                'SHR',
+                'S',
+                '%CPU',
+                '%MEM',
+                'TIME+',
+                'COMMAND'
+            ];
+            
+            // match rows for columns and set into return
+            $result = [];
+            foreach ($lines as $row => $line) {
+                $column = array_values(array_filter(explode(' ', $line), 'strlen'));
+                foreach ($columns as $col => $key) {
+                    $result[$row][$key] = @$column[$col];
+                }
+            }
+        }
+
+        return $result;
     }
     
     /**
@@ -391,13 +537,42 @@ class System
      *
      * @return string
      */
-    public function disks()
+    public function disks($parse = true)
     {
         if ($this->host_os !== 'WINDOWS') {
-            return shell_exec('df -h --output=source,fstype,size,used,avail,pcent,target -x tmpfs -x devtmpfs');
+            $result = shell_exec('df -h --output=source,fstype,size,used,avail,pcent,target -x tmpfs -x devtmpfs');
         } else {
-            return '';
+            $result = '';
         }
+        
+        if ($parse) {
+            if (empty($result)) {
+                return [];
+            }
+            
+            $lines = explode(PHP_EOL, $result);
+            unset($lines[0]);
+
+            $columns = [
+                'Filesystem',
+                'Type',
+                'Size',
+                'Used',
+                'Avail',
+                'Used (%)',
+                'Mounted'
+            ];
+            
+            $result = [];
+            foreach ($lines as $row => $line) {
+                $column = array_values(array_filter(explode(' ', $line), 'strlen'));
+                foreach ($columns as $col => $key) {
+                    $result[$row][$key] = @$column[$col];
+                }
+            }
+        }
+        
+        return $result;
     }
     
     /**
