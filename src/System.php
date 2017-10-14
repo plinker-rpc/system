@@ -334,7 +334,6 @@ class System
         $result = shell_exec('last');
 
         if ($parse) {
-            
             $lines = explode(PHP_EOL, $result);
             
             // detect end by empty line space
