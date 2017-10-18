@@ -16,7 +16,12 @@ class System
         $this->host_os = trim(strtoupper(strstr(php_uname(), ' ', true)));
     }
     
-    public function enumarate($methods = [])
+    /**
+     * Enumerate multiple methods, saves on HTTP calls
+     * 
+     * @param array $methods
+     */
+    public function enumerate($methods = [])
     {
         $methods = $methods[0];
         
