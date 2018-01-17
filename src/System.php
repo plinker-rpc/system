@@ -18,7 +18,7 @@ class System
     
     /**
      * Enumerate multiple methods, saves on HTTP calls
-     * 
+     *
      * @param array $methods
      */
     public function enumerate($methods = [])
