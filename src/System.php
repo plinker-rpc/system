@@ -13,6 +13,7 @@ class System
      */
     public function __construct()
     {
+        $this->tmp_path = './.plinker';
         $this->host_os = trim(strtoupper(strstr(php_uname(), ' ', true)));
     }
     
@@ -233,24 +234,30 @@ class System
      */
     public function machine_id()
     {
-        if (file_exists('./machine-id')) {
-            return file_get_contents('./machine-id');
+        // check stmp path
+        if (!file_exists($this->tmp_path.'/system')) {
+            mkdir($this->tmp_path.'/system', 0755, true);
+        }
+        
+        // file already generated
+        if (file_exists($this->tmp_path.'/system/machine-id')) {
+            return file_get_contents($this->tmp_path.'/system/machine-id');
         }
 
         if (file_exists('/var/lib/dbus/machine-id')) {
             $id = trim(`cat /var/lib/dbus/machine-id`);
-            file_put_contents('./machine-id', $id);
+            file_put_contents($this->tmp_path.'/system/machine-id', $id);
             return $id;
         }
 
         if (file_exists('/etc/machine-id')) {
             $id = trim(`cat /etc/machine-id`);
-            file_put_contents('./machine-id', $id);
+            file_put_contents($this->tmp_path.'/system/machine-id', $id);
             return $id;
         }
 
         $id = sha1(uniqid(true));
-        file_put_contents('./machine-id', $id);
+        file_put_contents($this->tmp_path.'/system/machine-id', $id);
         return $id;
     }
     
@@ -443,9 +450,12 @@ class System
      */
     public function top($parse = true)
     {
-        shell_exec('top -n 1 -b > ./top-output');
+        if (!file_exists($this->tmp_path.'/system')) {
+            mkdir($this->tmp_path.'/system', 0755, true);
+        }
+        shell_exec('top -n 1 -b > '.$this->tmp_path.'/system/top-output');
         usleep(25000);
-        $result = trim(file_get_contents('./top-output'));
+        $result = trim(file_get_contents($this->tmp_path.'/system/top-output'));
 
         if ($parse) {
             $lines = explode(PHP_EOL, $result);
