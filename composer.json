@@ -4,7 +4,7 @@
     "description": "System component which gives you access to server information.",
     "license": "MIT",
     "keywords": ["system","information"],
-    "homepage": "https://bitbucket.org/plinker/example/",
+    "homepage": "https://github.com/plinker-rpc",
     "authors": [
         {
             "name": "Lawrence Cherone",
@@ -14,7 +14,7 @@
         }
     ],
     "support": {
-        "email": "plinker@icodes.it"
+        "email": "lawrence@cherone.co.uk"
     },
     "require": {
         "plinker/core": ">=0.1"
