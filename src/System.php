@@ -607,7 +607,7 @@ class System
     /**
      * Get system uptime
      */
-    public function uptime($option = '-p')
+    public function uptime($option = ['-p'])
     {
         $option = $option[0];
 
