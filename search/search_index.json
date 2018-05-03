@@ -1,0 +1,14 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "PlinkerRPC PHP client/server makes it really easy to link and execute PHP component classes on remote systems, while maintaining the feel of a local method call.\n\n\nA system component which gives you access to server information.\n\n\nComposer\n\n\n{\n    \nrequire\n: {\n        \nplinker/system\n: \n=v0.1\n\n    }\n}\n\n\n\n\n\nMaking a remote call.\n\n\n?php\n\n\nrequire\n \nvendor/autoload.php\n;\n\n\n\n/**\n\n\n * Initialize plinker client.\n\n\n *\n\n\n * @param string $server\n\n\n * @param string $config\n\n\n */\n\n\n$client\n \n=\n \nnew\n \n\\Plinker\\Core\\Client\n(\n\n    \nhttp://example.com/server.php\n,\n\n    \n[\n\n        \nsecret\n \n=\n \na secret password\n\n    \n]\n\n\n);\n\n\necho\n \npre\n.\nprint_r\n(\n$client\n-\nsystem\n-\nmemory_stats\n(),\n \ntrue\n)\n.\n/pre\n;\n\n\n\n\n\n\nthen the server part...\n\n\n?php\n\n\nrequire\n \nvendor/autoload.php\n;\n\n\n\n/**\n\n\n * POST Server Part\n\n\n */\n\n\nif\n \n(\n$_SERVER\n[\nREQUEST_METHOD\n]\n \n==\n \nPOST\n)\n \n{\n\n    \n$server\n \n=\n \nnew\n \nPlinker\\Core\\Server\n(\n\n        \n$_POST\n,\n\n        \nusername\n,\n\n        \npassword\n\n    \n);\n\n    \nexit\n(\n$server\n-\nexecute\n());\n\n\n}\n\n\n\n\n\n\nSee the \norganisations page\n for additional components.", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#making-a-remote-call", 
+            "text": "?php  require   vendor/autoload.php ;  /**   * Initialize plinker client.   *   * @param string $server   * @param string $config   */  $client   =   new   \\Plinker\\Core\\Client ( \n     http://example.com/server.php , \n     [ \n         secret   =   a secret password \n     ]  );  echo   pre . print_r ( $client - system - memory_stats (),   true ) . /pre ;   then the server part...  ?php  require   vendor/autoload.php ;  /**   * POST Server Part   */  if   ( $_SERVER [ REQUEST_METHOD ]   ==   POST )   { \n     $server   =   new   Plinker\\Core\\Server ( \n         $_POST , \n         username , \n         password \n     ); \n     exit ( $server - execute ());  }   See the  organisations page  for additional components.", 
+            "title": "Making a remote call."
+        }
+    ]
+}
