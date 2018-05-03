@@ -14,9 +14,14 @@ class System
     public function __construct()
     {
         $this->tmp_path = './.plinker';
+
+        if (!file_exists($this->tmp_path)) {
+            mkdir($this->tmp_path, 0755, true);
+        }
+
         $this->host_os = trim(strtoupper(strstr(php_uname(), ' ', true)));
     }
-    
+
     /**
      * Enumerate multiple methods, saves on HTTP calls
      *
@@ -24,8 +29,6 @@ class System
      */
     public function enumerate($methods = [])
     {
-        $methods = $methods[0];
-        
         if (is_array($methods)) {
             $return = [];
             foreach ($methods as $method) {
@@ -36,7 +39,7 @@ class System
             return $this->$methods();
         }
     }
-    
+
     /**
      * Check system for updates
      *
@@ -44,28 +47,32 @@ class System
      */
     public function system_updates()
     {
-        unlink('./check-updates');
+        if (file_exists($this->tmp_path.'/check-updates')) {
+            unlink($this->tmp_path.'/check-updates');
+        }
+
         if ($this->host_os === 'WINDOWS') {
             $updSess = new \COM("Microsoft.Update.Session");
             $updSrc = $updSess->CreateUpdateSearcher();
             $result = $updSrc->Search('IsInstalled=0 and Type=\'Software\' and IsHidden=0');
-            return !empty($result->Updates->Count) ? '1':'0';
-        } else {
-            if ($this->distro() === 'UBUNTU') {
-                $get_updates = shell_exec('apt-get -s dist-upgrade');
-                if (preg_match('/^(\d+).+upgrade.+(\d+).+newly\sinstall/m', $get_updates, $matches)) {
-                    $result = (int) $matches[1] + (int) $matches[2];
-                } else {
-                    $result = 0;
-                }
-                return !empty($result) ? '1':'0';
-            }
-            if ($this->distro() === 'CENTOS') {
-                exec('yum check-update', $output, $exitCode);
-                return ($exitCode == 100) ? '1':'0';
-            }
-            return '-1';
+            return !empty($result->Updates->Count) ? '1' : '0';
         }
+
+        if ($this->distro() === 'UBUNTU') {
+            $get_updates = shell_exec('apt-get -s dist-upgrade');
+            if (preg_match('/^(\d+).+upgrade.+(\d+).+newly\sinstall/m', $get_updates, $matches)) {
+                $result = (int) $matches[1] + (int) $matches[2];
+            } else {
+                $result = 0;
+            }
+            return !empty($result) ? '1' : '0';
+        }
+
+        if ($this->distro() === 'CENTOS') {
+            exec('yum check-update', $output, $exitCode);
+            return ($exitCode == 100) ? '1' : '0';
+        }
+        return '-1';
     }
 
     /**
@@ -76,8 +83,6 @@ class System
      */
     public function disk_space($path = '/')
     {
-        $path = $path[0];
-
         if ($this->host_os === 'WINDOWS') {
             $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $disks =  $wmi->ExecQuery("Select * from Win32_LogicalDisk");
@@ -92,10 +97,9 @@ class System
             $ds = disk_total_space($path);
             $df = disk_free_space($path);
         }
-
         return ($df > 0 && $ds > 0 && $df < $ds) ? floor($df/$ds * 100) : 0;
     }
-    
+
     /**
      * Get total diskspace
      *
@@ -104,8 +108,6 @@ class System
      */
     public function total_disk_space($path = '/')
     {
-        $path = $path[0];
-
         $ds = 0;
         if ($this->host_os === 'WINDOWS') {
             $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
@@ -119,10 +121,9 @@ class System
         } else {
             $ds = disk_total_space($path);
         }
-
         return $ds;
     }
-    
+
     /**
      * Get memory usage
      *
@@ -172,10 +173,9 @@ class System
         $result['used']  = round(($mem_total - ($mem_buff + $mem_cache + $mem_free)) * 100 / $mem_total);
         $result['cache'] = round(($mem_cache + $mem_buff) * 100 / $mem_total);
         $result['free']  = round($mem_free * 100 / $mem_total);
-
         return $result;
     }
-    
+
     /**
      * Get memory total bytes
      *
@@ -202,10 +202,9 @@ class System
             }
             fclose($fh);
         }
-
         return $mem_total;
     }
-    
+
     /**
      * Get CPU usage in percentage
      *
@@ -225,7 +224,7 @@ class System
         }
         return trim($return);
     }
-    
+
     /**
      * Get system machine-id
      *  - Generates one if does not have one (windows).
@@ -238,7 +237,7 @@ class System
         if (!file_exists($this->tmp_path.'/system')) {
             mkdir($this->tmp_path.'/system', 0755, true);
         }
-        
+
         // file already generated
         if (file_exists($this->tmp_path.'/system/machine-id')) {
             return file_get_contents($this->tmp_path.'/system/machine-id');
@@ -260,7 +259,7 @@ class System
         file_put_contents($this->tmp_path.'/system/machine-id', $id);
         return $id;
     }
-    
+
     /**
      * Get netstat output
      *
@@ -268,15 +267,13 @@ class System
      */
     public function netstat($option = '-ant', $parse = true)
     {
-        $option = $option[0];
-        
         $result = shell_exec('netstat '.$option);
-        
+
         if ($parse) {
             $lines = explode(PHP_EOL, $result);
             unset($lines[0]);
             unset($lines[1]);
-                 
+
             $columns = [
                 'Proto',
                 'Recv-Q',
@@ -287,7 +284,7 @@ class System
                 'PID/Program',
                 'Process Name',
             ];
-            
+
             $result = [];
             foreach ($lines as $row => $line) {
                 $column = array_values(array_filter(explode(' ', $line), 'strlen'));
@@ -296,10 +293,9 @@ class System
                 }
             }
         }
-        
         return $result;
     }
-    
+
     /**
      * Get system architecture
      *
@@ -330,7 +326,7 @@ class System
         }
         return $arch;
     }
-    
+
     /**
      * Get system hostname
      *
@@ -350,7 +346,7 @@ class System
         }
         return trim($hostname);
     }
-    
+
     /**
      * Get system last logins
      *
@@ -362,7 +358,7 @@ class System
 
         if ($parse) {
             $lines = explode(PHP_EOL, $result);
-            
+
             // detect end by empty line space
             $end = 0;
             foreach ($lines as $no => $line) {
@@ -389,7 +385,7 @@ class System
                 'Disconnected',
                 'Duration',
             ];
-            
+
             // generic match rows for columns and set into return
             $result = [];
             foreach ($lines as $row => $line) {
@@ -398,7 +394,7 @@ class System
                     $result[$row][$key] = @$column[$col];
                 }
             }
-            
+
             // fix
             $fix = [];
             foreach ($result as $key => $row) {
@@ -417,7 +413,7 @@ class System
                     if ($row['Disconnected'] == '-') {
                         $row['Disconnected'] = '';
                     }
-                    
+
                     $fix[] = [
                         'User' => $row['User'],
                         'Terminal' => $row['Terminal'].''.$row['Display'],
@@ -429,10 +425,9 @@ class System
             }
             $result = $fix;
         }
-        
         return $result;
     }
-    
+
     /**
      * Get system process tree
      *
@@ -442,7 +437,7 @@ class System
     {
         return shell_exec('pstree');
     }
-    
+
     /**
      * Get system top output
      *
@@ -472,10 +467,10 @@ class System
             foreach (range(0, $start) as $key) {
                 unset($lines[$key]);
             }
-            
+
             //remove column line
             unset($lines[$start+1]);
-            
+
             // define columns
             $columns = [
                 'PID',
@@ -491,7 +486,7 @@ class System
                 'TIME+',
                 'COMMAND'
             ];
-            
+
             // match rows for columns and set into return
             $result = [];
             foreach ($lines as $row => $line) {
@@ -501,10 +496,9 @@ class System
                 }
             }
         }
-
         return $result;
     }
-    
+
     /**
      * Get system name/kernel version
      *
@@ -525,7 +519,7 @@ class System
         }
         return $uname;
     }
-    
+
     /**
      * Get system CPU info output
      *
@@ -535,7 +529,7 @@ class System
     {
         return trim(shell_exec('cat /proc/cpuinfo'));
     }
-    
+
     /**
      * Get current network usage - Bit slow and not reliable
      */
@@ -550,7 +544,7 @@ class System
     //         return shell_exec('S=2; F=/sys/class/net/eth0/statistics/rx_bytes; X=`cat $F`; sleep $S; Y=`cat $F`; BPS="$(((Y-X)/S))"; echo $BPS');
     //     }
     // }
-    
+
     /**
      * Get system load
      *
@@ -560,7 +554,7 @@ class System
     {
         return shell_exec('cat /proc/loadavg');
     }
-    
+
     /**
      * Get disk file system table
      *
@@ -573,12 +567,12 @@ class System
         } else {
             $result = '';
         }
-        
+
         if ($parse) {
             if (empty($result)) {
                 return [];
             }
-            
+
             $lines = explode(PHP_EOL, $result);
             unset($lines[0]);
 
@@ -591,7 +585,7 @@ class System
                 'Used (%)',
                 'Mounted'
             ];
-            
+
             $result = [];
             foreach ($lines as $row => $line) {
                 $column = array_values(array_filter(explode(' ', $line), 'strlen'));
@@ -600,17 +594,14 @@ class System
                 }
             }
         }
-        
         return $result;
     }
-    
+
     /**
      * Get system uptime
      */
-    public function uptime($option = ['-p'])
+    public function uptime($option = '-p')
     {
-        $option = $option[0];
-
         if ($this->host_os === 'WINDOWS') {
             $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
             $os = $wmi->ExecQuery("SELECT * FROM Win32_OperatingSystem");
@@ -628,7 +619,7 @@ class System
         }
         return $uptime;
     }
-    
+
     /**
      * Ping a server and return timing
      *
@@ -636,8 +627,6 @@ class System
      */
     public function ping($host = '')
     {
-        $host = $host[0];
-
         $start  = microtime(true);
         $file   = @fsockopen($host, 80, $errno, $errstr, 5);
         $stop   = microtime(true);
@@ -649,10 +638,9 @@ class System
             fclose($file);
             $status = round((($stop - $start) * 1000), 2);
         }
-
         return $status;
     }
-    
+
     /**
      * Get system distro
      *
@@ -669,8 +657,9 @@ class System
             preg_match('/ID=([a-zA-Z]+)/', file_get_contents('/etc/os-release'), $matches);
             return strtoupper($matches[1]);
         }
+        return false;
     }
-    
+
     /**
      * Drop memory caches
      *
@@ -680,8 +669,9 @@ class System
     public function drop_cache()
     {
         shell_exec('echo 1 > /proc/sys/vm/drop_caches');
+        return true;
     }
-    
+
     /**
      * Clear swapspace
      *
@@ -692,8 +682,9 @@ class System
     {
         shell_exec('swapoff -a');
         shell_exec('swapon -a');
+        return true;
     }
-    
+
     /**
      * Reboot the system
      *
@@ -702,10 +693,11 @@ class System
      */
     public function reboot()
     {
-        if (!file_exists('./reboot.sh')) {
-            file_put_contents('./reboot.sh', '#!/bin/bash'.PHP_EOL.'/sbin/shutdown -r now');
-            chmod('./reboot.sh', 0750);
+        if (!file_exists($this->tmp_path.'/reboot.sh')) {
+            file_put_contents($this->tmp_path.'/reboot.sh', '#!/bin/bash'.PHP_EOL.'/sbin/shutdown -r now');
+            chmod($this->tmp_path.'/reboot.sh', 0750);
         }
-        shell_exec('./reboot.sh');
+        shell_exec($this->tmp_path.'/reboot.sh');
+        return true;
     }
 }
