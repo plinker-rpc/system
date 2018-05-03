@@ -17,31 +17,22 @@ A system component which gives you access to server information.
 Making a remote call.
 --------------------
 
-WIP: To be updated with info on how to use this component, also add the tasks code.
-
-
     <?php
     require 'vendor/autoload.php';
 
     /**
      * Initialize plinker client.
      *
-     * @param string $url to host
-     * @param string $component namespace of class to interface to
-     * @param string $public_key to authenticate on host
-     * @param string $private_key to authenticate on host
-     * @param string $config component construct config
+     * @param string $server
+     * @param string $config
      */
-    $plink = new Plinker\Core\Client(
-        'http://example.com',
-        'System\System',
-        'username',
-        'password',
-        array(
-            'time' => time()
-        )
+    $client = new \Plinker\Core\Client(
+        'http://example.com/server.php',
+        [
+            'secret' => 'a secret password'
+        ]
     );
-    echo '<pre>'.print_r($plink->memory_stats(), true).'</pre>';
+    echo '<pre>'.print_r($client->system->memory_stats(), true).'</pre>';
 
 
 **then the server part...**
