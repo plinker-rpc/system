@@ -68,7 +68,6 @@ $client->system->enumerate('disks', ['/']);
 Array
 (
     [arch] => x86_64
-
     [hostname] => plinker
     [disks] => Array
         (
