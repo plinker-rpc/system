@@ -272,10 +272,10 @@ class System
      */
     public function netstat($parse = true)
     {
-        $result = shell_exec('netstat -pant');
+        $result = trim(shell_exec('netstat -pant'));
 
         if ($parse) {
-            $lines = explode(PHP_EOL, trim($result));
+            $lines = explode(PHP_EOL, $result);
             unset($lines[0]);
             unset($lines[1]);
 
@@ -299,6 +299,7 @@ class System
             }
             $result = array_values($result);
         }
+        
         return $result;
     }
 
@@ -330,7 +331,7 @@ class System
         } else {
             $arch = shell_exec('arch');
         }
-        return $arch;
+        return trim($arch);
     }
 
     /**
@@ -345,7 +346,7 @@ class System
             $computer = $wmi->ExecQuery("SELECT * FROM Win32_ComputerSystem");
 
             foreach ($computer as $c) {
-                $hostname = trim($c->Name);
+                $hostname = $c->Name;
             }
         } else {
             $hostname = shell_exec('hostname');
@@ -360,7 +361,7 @@ class System
      */
     public function logins($parse = true)
     {
-        $result = shell_exec('last');
+        $result = trim(shell_exec('last'));
 
         if ($parse) {
             $lines = explode(PHP_EOL, $result);
@@ -431,6 +432,7 @@ class System
             }
             $result = $fix;
         }
+        
         return $result;
     }
 
@@ -441,7 +443,7 @@ class System
      */
     public function pstree()
     {
-        return shell_exec('pstree');
+        return trim(shell_exec('pstree'));
     }
 
     /**
@@ -459,7 +461,7 @@ class System
         $result = trim(file_get_contents($this->tmp_path.'/system/top-output'));
 
         if ($parse) {
-            $lines = explode(PHP_EOL, trim($result));
+            $lines = explode(PHP_EOL, $result);
 
             // detect start by empty line space
             $start = 0;
@@ -524,7 +526,7 @@ class System
         } else {
             $uname = shell_exec('uname -rs');
         }
-        return $uname;
+        return trim($uname);
     }
 
     /**
@@ -559,7 +561,7 @@ class System
      */
     public function load()
     {
-        return shell_exec('cat /proc/loadavg');
+        return trim(shell_exec('cat /proc/loadavg'));
     }
 
     /**
@@ -623,9 +625,9 @@ class System
                 $uptime = $interval->format('up %a days, %h hours, %i minutes');
             }
         } else {
-            $uptime = trim(shell_exec('uptime '.$option));
+            $uptime = shell_exec('uptime '.$option);
         }
-        return $uptime;
+        return trim($uptime);
     }
 
     /**
