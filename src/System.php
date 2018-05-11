@@ -27,23 +27,27 @@ class System
      *
      * @param array $methods
      */
-    public function enumerate($methods = [])
+    public function enumerate($methods = [], $params = [])
     {
         if (is_array($methods)) {
             $return = [];
-            foreach ($methods as $method) {
-                $return[$method] = $this->$method();
+            foreach ($methods as $key => $value) {
+                if (is_array($value)) {
+                    $return[$key] = $this->$key(...$value);
+                } else {
+                    $return[$value] = $this->$value();
+                }
             }
             return $return;
         } elseif (is_string($methods)) {
-            return $this->$methods();
+            return $this->$methods(...$params);
         }
     }
 
     /**
      * Check system for updates
      *
-     * @return int 1=has updates, 0=no updates, -1=dunno
+     * @return int 1=has updates, 0=no updates, -1=unknown
      */
     public function system_updates()
     {
@@ -177,7 +181,7 @@ class System
     }
 
     /**
-     * Get memory total bytes
+     * Get memory total kB
      *
      * @return int
      */
@@ -196,8 +200,9 @@ class System
 
             while ($line = fgets($fh)) {
                 $pieces = array();
-                if (preg_match('/^MemTotal:\s+(\d+)\skB$/', $line, $pieces)) {
+                if (preg_match('/^MemTotal:\s+(\d+)\skB$/', trim($line), $pieces)) {
                     $mem_total = $pieces[1];
+                    break;
                 }
             }
             fclose($fh);
@@ -265,12 +270,12 @@ class System
      *
      * @return string
      */
-    public function netstat($option = '-ant', $parse = true)
+    public function netstat($parse = true)
     {
-        $result = shell_exec('netstat '.$option);
+        $result = shell_exec('netstat -pant');
 
         if ($parse) {
-            $lines = explode(PHP_EOL, $result);
+            $lines = explode(PHP_EOL, trim($result));
             unset($lines[0]);
             unset($lines[1]);
 
@@ -292,6 +297,7 @@ class System
                     $result[$row][$key] = @$column[$col];
                 }
             }
+            $result = array_values($result);
         }
         return $result;
     }
@@ -453,7 +459,7 @@ class System
         $result = trim(file_get_contents($this->tmp_path.'/system/top-output'));
 
         if ($parse) {
-            $lines = explode(PHP_EOL, $result);
+            $lines = explode(PHP_EOL, trim($result));
 
             // detect start by empty line space
             $start = 0;
@@ -495,6 +501,7 @@ class System
                     $result[$row][$key] = @$column[$col];
                 }
             }
+            $result = array_values($result);
         }
         return $result;
     }
@@ -573,7 +580,7 @@ class System
                 return [];
             }
 
-            $lines = explode(PHP_EOL, $result);
+            $lines = explode(PHP_EOL, trim($result));
             unset($lines[0]);
 
             $columns = [
@@ -593,6 +600,7 @@ class System
                     $result[$row][$key] = @$column[$col];
                 }
             }
+            $result = array_values($result);
         }
         return $result;
     }
@@ -625,7 +633,7 @@ class System
      *
      * @return float
      */
-    public function ping($host = '')
+    public function ping($host = '', $port = 80)
     {
         $start  = microtime(true);
         $file   = @fsockopen($host, 80, $errno, $errstr, 5);
