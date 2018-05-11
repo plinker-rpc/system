@@ -206,7 +206,7 @@ $client->system->disk_space();
 
 ### Disks
 
-.....
+Return mounted disks.
 
 | Parameter   | Type           | Description   | Default        |
 | ----------  | -------------  | ------------- |  ------------- | 
@@ -631,7 +631,7 @@ There are no tests setup for this component.
 
 ## Contributing
 
-Please see [CONTRIBUTING](https://github.com/plinker-rpc/files/blob/master/CONTRIBUTING) for details.
+Please see [CONTRIBUTING](https://github.com/plinker-rpc/system/blob/master/CONTRIBUTING) for details.
 
 ## Security
 
@@ -640,7 +640,7 @@ If you discover any security related issues, please contact me via [https://cher
 ## Credits
 
 - [Lawrence Cherone](https://github.com/lcherone)
-- [All Contributors](https://github.com/plinker-rpc/files/graphs/contributors)
+- [All Contributors](https://github.com/plinker-rpc/system/graphs/contributors)
 
 
 ## Development Encouragement
@@ -654,6 +654,6 @@ Get your company or name listed throughout the documentation and on each github 
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/plinker-rpc/files/blob/master/LICENSE) for more information.
+The MIT License (MIT). Please see [License File](https://github.com/plinker-rpc/system/blob/master/LICENSE) for more information.
 
 See the [organisations page](https://github.com/plinker-rpc) for additional components.
