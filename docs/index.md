@@ -126,7 +126,7 @@ Returns information about the CPU.
 
 **Call**
 ``` php
-$client->system->cpuinfo();
+$client->system->cpu_info();
 ```
 
 **Response**

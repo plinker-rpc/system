@@ -549,7 +549,7 @@ class System
     /**
      * Get system CPU info
      */
-    public function cpuinfo($parse = true)
+    public function cpu_info($parse = true)
     {
         $lines = trim(shell_exec('lscpu'));
         
