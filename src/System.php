@@ -547,13 +547,29 @@ class System
     }
 
     /**
-     * Get system CPU info output
-     *
-     * @param string
+     * Get system CPU info
      */
-    public function cpuinfo()
+    public function cpuinfo($parse = true)
     {
-        return trim(shell_exec('cat /proc/cpuinfo'));
+        $lines = trim(shell_exec('lscpu'));
+        
+        if (!$parse) {
+            return $lines;
+        }
+        
+        if (empty($lines)) {
+            return [];
+        }
+        
+        $lines = explode(PHP_EOL, $lines);
+        
+        $return = [];
+        foreach ($lines as $line) {
+            $parts = explode(':', $line);
+            $return[trim($parts[0])] = trim($parts[1]);
+        }
+
+        return $return;
     }
 
     /**
