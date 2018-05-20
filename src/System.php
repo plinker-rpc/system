@@ -588,13 +588,30 @@ class System
     // }
 
     /**
-     * Get system load
-     *
-     * @return string
+     * Get system load avarages and process count/last pid
      */
-    public function load()
+    public function load($parse = true)
     {
-        return trim(shell_exec('cat /proc/loadavg'));
+        $result = trim(shell_exec('cat /proc/loadavg'));
+        
+        if (!$parse) {
+            return $result;
+        }
+        
+        // break into parts
+        $parts = explode(' ', $result);
+        
+        // current/total processes
+        $procs = explode('/', isset($parts[3]) ? trim($parts[3]) : '0/0');
+
+        return [
+            '1m'        => isset($parts[0]) ? number_format(trim($parts[0]), 2) : '0.00',
+            '5m'        => isset($parts[1]) ? number_format(trim($parts[1]), 2) : '0.00',
+            '15m'       => isset($parts[2]) ? number_format(trim($parts[2]), 2) : '0.00',
+            'curr_proc' => $procs[0],
+            'totl_proc' => $procs[1],
+            'last_pid'  => isset($parts[4]) ? trim($parts[4]) : 0
+        ];
     }
 
     /**

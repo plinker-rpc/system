@@ -266,6 +266,10 @@ plinker
 
 Get the systems load averages.
 
+| Parameter   | Type           | Description   | Default        |
+| ----------  | -------------  | ------------- |  ------------- | 
+| parse       | bool           | Parse output into an array | `true` |
+
 **Call**
 ``` php
 $client->system->load();
@@ -273,7 +277,15 @@ $client->system->load();
 
 **Response**
 ``` text
-0.41 0.50 0.69 1/1474 6223
+Array
+(
+    [1m] => 1.71
+    [5m] => 1.21
+    [15m] => 1.14
+    [curr_proc] => 3
+    [totl_proc] => 1437
+    [last_pid] => 3272
+)
 ```
 
 ### Logins
