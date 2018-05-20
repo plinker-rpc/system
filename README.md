@@ -502,13 +502,13 @@ $client->system->reboot();
 true
 ```
 
-### Server CPU Usage
+### CPU Usage
 
 Returns the current CPU usage in percentage value.
 
 **Call**
 ``` php
-$client->system->server_cpu_usage();
+$client->system->cpu_usage();
 ```
 
 **Response**

@@ -232,7 +232,7 @@ class System
      *
      * @return int
      */
-    public function server_cpu_usage()
+    public function cpu_usage()
     {
         if ($this->host_os === 'WINDOWS') {
             $wmi = new \COM("winmgmts:\\\\.\\root\\cimv2");
