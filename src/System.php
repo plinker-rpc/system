@@ -719,6 +719,14 @@ class System
         }
         return false;
     }
+    
+    /**
+     * Execute command
+     */
+    public function shell_exec($cmd = '')
+    {
+        return shell_exec($cmd);
+    }
 
     /**
      * Drop memory caches
