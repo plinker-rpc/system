@@ -440,7 +440,8 @@ class System
 
                     $fix[] = [
                         'User' => $row['User'],
-                        'Terminal' => $row['Terminal'].' '.$row['Display'],
+                        'Terminal' => $row['Terminal'],
+                        'Display' => $row['Display'],
                         'Date' => $row['Day'].' '.$row['Month'].' '.$row['Day Date'].' '.$row['Day Time'],
                         'Disconnected' => $row['Disconnected'],
                         'Duration' => trim($row['Duration'], '()'),
