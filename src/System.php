@@ -689,7 +689,7 @@ class System
     public function ping($host = '', $port = 80)
     {
         $start  = microtime(true);
-        $file   = @fsockopen($host, 80, $errno, $errstr, 5);
+        $file   = @fsockopen($host, $port, $errno, $errstr, 5);
         $stop   = microtime(true);
         $status = 0;
 
